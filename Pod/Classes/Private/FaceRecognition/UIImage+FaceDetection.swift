@@ -93,9 +93,11 @@ extension UIImage {
     // MARK: - Private
 
     private func detectFaces() -> [CIFaceFeature] {
-        let faceDetector: CIDetector = CIDetector(ofType: CIDetectorTypeFace,
+        guard let faceDetector: CIDetector = CIDetector(ofType: CIDetectorTypeFace,
                                                   context: nil,
-                                                  options: [CIDetectorAccuracy: CIDetectorAccuracyLow])
+                                                  options: [CIDetectorAccuracy: CIDetectorAccuracyLow]) else {
+                                                    return []
+        }
         var ciImage = self.CIImage
 
         if ciImage == nil {
