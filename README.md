@@ -26,16 +26,16 @@ APKenBurnsView is UIView subclass which supports face recognition to beautifully
 ## Face Recognition
 
 APKenBurnsView supports three modes for face recognition: 
-* `None` - no face recognition, simple Ken Burns effect.
-* `Biggest` - recognizes biggest face in image, if any then transition will start or finish (chosen randomly) in center of face rect.
-* `Group` - recognizes all faces in image, if any then transition will start or finish (chosen randomly) in center of compound rect of all faces.
+* `none` - no face recognition, simple Ken Burns effect.
+* `biggest` - recognizes biggest face in image, if any then transition will start or finish (chosen randomly) in center of face rect.
+* `group` - recognizes all faces in image, if any then transition will start or finish (chosen randomly) in center of compound rect of all faces.
 
 
 ## Usage
 
 Just simple interface. Provide data source class for UIImage's, setup all timings and run `startAnimations()`. No rocket science!
 
-Data source should be ready to provide next image at the moment when APKenBurnsView calls `func nextImageForKenBurnsView(kenBurnsView: APKenBurnsView) -> UIImage?`. If there is no UIImage ready (still loading from network, etc.) then data source should return `nil` and APKenBurnsView will animate last image one more time. If you are loading your images from network you should consider some preloading mechanism.
+Data source should be ready to provide next image at the moment when APKenBurnsView calls `func nextImage(forKenBurnsView kenBurnsView: APKenBurnsView) -> UIImage?`. If there is no UIImage ready (still loading from network, etc.) then data source should return `nil` and APKenBurnsView will animate last image one more time. If you are loading your images from network you should consider some preloading mechanism.
 
 Example of usage:
 ```swift
@@ -48,7 +48,7 @@ class MyViewController: UIViewController {
         super.viewDidLoad()
 
         kenBurnsView.dataSource = self
-        kenBurnsView.faceRecognitionMode = .Biggest
+        kenBurnsView.faceRecognitionMode = .biggest
         
         kenBurnsView.scaleFactorDeviation = 0.5
         kenBurnsView.imageAnimationDuration = 5.0
@@ -57,7 +57,7 @@ class MyViewController: UIViewController {
         kenBurnsView.transitionAnimationDurationDeviation = 1.0
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         self.kenBurnsView.startAnimations()
@@ -65,7 +65,7 @@ class MyViewController: UIViewController {
 }
     
 extension KenBurnsViewController: APKenBurnsViewDataSource {
-    func nextImageForKenBurnsView(kenBurnsView: APKenBurnsView) -> UIImage? {
+	func nextImage(forKenBurnsView kenBurnsView: APKenBurnsView) -> UIImage? {
         return /* Provide UIImage instance */
     }
 }

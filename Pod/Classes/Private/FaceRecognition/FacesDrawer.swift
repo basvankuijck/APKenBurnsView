@@ -6,8 +6,8 @@ import Foundation
 import UIKit
 
 protocol FacesDrawerProtocol {
-    func drawFacesInView(view: UIView, image: UIImage)
-    func cleanUpForView(view: UIView)
+    func drawFaces(inView: UIView, image: UIImage)
+    func cleanUp(forView view: UIView)
 }
 
 
@@ -15,7 +15,7 @@ class FacesDrawer: FacesDrawerProtocol {
 
     // MARK: - Public Variables
 
-    var faceColor: UIColor = UIColor.redColor()
+    var faceColor: UIColor = UIColor.red
     var faceAlpha: CGFloat = 0.2
 
     // MARK: - Private Variables
@@ -24,13 +24,12 @@ class FacesDrawer: FacesDrawerProtocol {
 
     // MARK: - Public
 
-    func drawFacesInView(view: UIView, image: UIImage) {
-        cleanUpForView(view)
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+    func drawFaces(inView view: UIView, image: UIImage) {
+        cleanUp(forView: view)
+        DispatchQueue.global().async {
             let allFacesRects = image.allFacesRects()
 
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 guard allFacesRects.count > 0 else {
                     return
                 }
@@ -38,13 +37,13 @@ class FacesDrawer: FacesDrawerProtocol {
                 self.facesViews[view.hashValue] = []
 
                 let viewPortSize = view.bounds
-                let imageCenter = CGPointMake(viewPortSize.size.width / 2, viewPortSize.size.height / 2)
+                let imageCenter = CGPoint(x: viewPortSize.size.width / 2, y: viewPortSize.size.height / 2)
                 let imageFrame = CGRect(center: imageCenter, size: image.size)
 
                 for faceRect in allFacesRects {
-                    let faceRectConverted = self.convertFaceRect(faceRect, inImageCoordinates: imageFrame.origin)
+                    let faceRectConverted = self.convert(faceRect: faceRect, inImageCoordinates: imageFrame.origin)
 
-                    let faceView = self.buildFaceViewWithFrame(faceRectConverted)
+                    let faceView = self.buildFaceView(withFrame: faceRectConverted)
                     self.facesViews[view.hashValue]!.append(faceView)
 
                     view.addSubview(faceView)
@@ -53,7 +52,7 @@ class FacesDrawer: FacesDrawerProtocol {
         }
     }
 
-    func cleanUpForView(view: UIView) {
+    func cleanUp(forView view: UIView) {
         guard let facesForView = facesViews[view.hashValue] else {
             return
         }
@@ -66,17 +65,17 @@ class FacesDrawer: FacesDrawerProtocol {
 
     // MARK: - Private
 
-    private func convertFaceRect(faceRect: CGRect, inImageCoordinates imageOrigin: CGPoint) -> CGRect {
+    private func convert(faceRect: CGRect, inImageCoordinates imageOrigin: CGPoint) -> CGRect {
         let faceRectConvertedX = imageOrigin.x + faceRect.origin.x
         let faceRectConvertedY = imageOrigin.y + faceRect.origin.y
-        let faceRectConverted = CGRectIntegral(CGRectMake(faceRectConvertedX,
-                                                          faceRectConvertedY,
-                                                          faceRect.size.width,
-                                                          faceRect.size.height))
+        let faceRectConverted = CGRect(x: faceRectConvertedX,
+                                       y: faceRectConvertedY,
+                                       width: faceRect.size.width,
+                                       height: faceRect.size.height).integral
         return faceRectConverted
     }
 
-    private func buildFaceViewWithFrame(frame: CGRect) -> UIView {
+    private func buildFaceView(withFrame frame: CGRect) -> UIView {
         let faceView = UIView(frame: frame)
         faceView.translatesAutoresizingMaskIntoConstraints = false
         faceView.backgroundColor = faceColor
